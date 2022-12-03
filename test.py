@@ -1,3 +1,2 @@
-text = '🗓2 Месяц'
-print(text[1:-6])
-print(text)
+text = '-T15:00:00'
+print(text[2:4])

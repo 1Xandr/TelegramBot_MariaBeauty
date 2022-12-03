@@ -29,13 +29,10 @@ obj = GoogleCalendar()
 name_calendar_id = 'sashacaha2019@gmail.com'
 
 
-def total(client_time, client_description, client_name):
-    total_time = ''
-    for x in client_time:
-        total_time += x
+def total(client_date, client_description, client_name):
     total_name = ''
     total_description = ''
-
+    time_cal = f'{client_date[0]}{client_date[1]}{client_date[2]}'
     for i in client_description:
         total_description += f'{i}, '
 
@@ -47,11 +44,11 @@ def total(client_time, client_description, client_name):
         'summary': total_name,
         'description': total_description,
         'start': {
-            'dateTime': total_time,
+            'dateTime': time_cal,
             'timeZone': 'Europe/Berlin',
         },
         'end': {
-            'dateTime': total_time.replace('14:00', '14:40'),
+            'dateTime': time_cal.replace(':00', ':40'),
             'timeZone': 'Europe/Berlin',
         },
     }

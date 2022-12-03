@@ -1,12 +1,14 @@
+from config import TelegramBotApi
 from google_calendar import total
 import telebot
 from telebot import types
 
-bot = telebot.TeleBot('5976741272:AAE07_pL6jOB62Xv8tOZh-yO7lHRnnnZknU')
+bot = telebot.TeleBot(TelegramBotApi)
 
-client_description = []  # which service
-client_time = []  # which date
+client_description = []  # Which service
+client_date = []  # Which date
 client_name = []  # Name and phone of user
+client_time = []  # Which time
 
 
 # command Help
@@ -58,13 +60,12 @@ def choice_message(message):
         # choose mouth
         bot.send_message(message.chat.id, 'Выбирите месяц👇 (1 Месяц = Январь)', reply_markup=markup_mounth)
 
-    elif message.text[-5:] == 'Месяц':  # if user chose mouth
-        client_time.clear()  # to clear list if user restart bot
-        # if len(message.text[1:-6]) == 1:  # if mouth have only 1 symbol [3 -> 03]
-        #     client_time.append(f'2022-0{message.text[1:-6]}-')
-        # else:
-        #     client_time.append(f'2022-{message.text[1:-6]}-')  # if not
-        client_time.append(f'2022-{message.text[1:-6]}-')
+    elif message.text[-5:] == 'Месяц' or message.text == 'Назад ◀':  # if user chose mouth
+        client_date.clear()  # to clear list if user restart bot
+        if len(message.text[1:-6]) == 1:  # if mouth have only 1 symbol [3 -> 03]
+            client_date.append(f'2022-0{message.text[1:-6]}-')
+        else:
+            client_date.append(f'2022-{message.text[1:-6]}-')  # if not
         markup = types.ReplyKeyboardMarkup(row_width=2)
         for x in range(1, 32):
             x = types.KeyboardButton(str(x))
@@ -72,14 +73,22 @@ def choice_message(message):
         bot.send_message(message.chat.id, 'НАПИШИТЕ📝 день. Например 👉 05', reply_markup=markup)  # choose day
 
     elif len(message.text.strip()) <= 2:  # if user chose day
-        client_time.append(f'{(message.text)}T14:00:00')  # for google calendar api
+        client_date.append(f'{(message.text)}')  # for google calendar api
+        from sql_file import get_empty_space
         markup = types.ReplyKeyboardMarkup()
-        yes = types.KeyboardButton('Да мне подходит ✅')
-        no = types.KeyboardButton('Нет я хочу выбрать другой день ❎')
-        markup.add(yes, no)
-        bot.send_message(message.chat.id, 'В этот день есть окно на 14:00, вам подходит🤔?', reply_markup=markup)
 
-    elif message.text[0:2] == 'Да':  # if yes
+        markup.add(types.KeyboardButton('Время на 14:00')) if get_empty_space(client_date)[0] == True else False
+        markup.add(types.KeyboardButton('Время на 15:00')) if get_empty_space(client_date)[1] == True else False
+        markup.add(types.KeyboardButton('Время на 16:00')) if get_empty_space(client_date)[2] == True else False
+        markup.add(types.KeyboardButton('Назад ◀'))
+
+        bot.send_message(message.chat.id, 'Выберите окно которое вам подходит😊', reply_markup=markup)
+
+    elif message.text[:5] == 'Время':  # if yes
+        time_chose = message.text[-5:]
+        client_time.clear()  # if bot was restarted
+        client_time.append(time_chose)
+        client_date.append(f'T{time_chose}:00')
         markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
         # create button to share user contact
         button_phone = types.KeyboardButton(text="Отправить телефон", request_contact=True)
@@ -88,20 +97,22 @@ def choice_message(message):
 
     elif message.text[0:3] == 'Нет':  # if no
         bot.send_message(message.chat.id, 'Тогда Напишите другой день😉')  # choose another day
-        client_time.pop(-1)
+        client_date.pop(-1)
     else:
         bot.send_message(message.chat.id, 'Я вас не поняла, если нужна помощь 👉 /help')
 
 
 @bot.message_handler(content_types=['contact'])  # if user sent contact
 def contact(message):
+    from sql_file import update_data
     client_name.clear()  # to clear list if user restart bot
     client_name.append(message.contact.first_name)
     client_name.append(message.contact.last_name)
     client_name.append(message.contact.phone_number)
     bot.send_message(message.chat.id, 'Отлично, я вас записала🤩')  # I wrote you down
-    # total(client_time, client_description, client_name)  # send request to google calendar api
-    print(client_name, client_description, client_time)
+    total(client_date, client_description, client_name)  # send request to google calendar api
+    update_data(client_time, client_date)  # send request to MySQL
 
 
 bot.polling(True)
+

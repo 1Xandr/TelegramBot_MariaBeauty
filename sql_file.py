@@ -14,33 +14,39 @@ try:
     print('Successfully connected ...')
     print('#' * 20)
 
-    # try:
-        # create table
-        # with connection.cursor() as cursor:
-        #     create_table_query = "CREATE TABLE `users`(id int AUTO_INCREMENT," \
-        #                          " name varchar(32)," \
-        #                          " password varchar(32)," \
-        #                          " email varchar(32), PRIMARY KEY (id));"
-        #
-        #     cursor.execute(create_table_query)
-        #     print('Table created successfully')
+    # to know what time free
+    def get_empty_space(client_date: list):
 
-        # insert data
-        # with connection.cursor() as cursor:
-        #     insert_query = "INSERT INTO `users` (name, password, email) VALUES ('Anna', 'qwerty', 'anna@gmail.com');"
-        #     cursor.execute(insert_query)
-        #     connection.commit()
+        get_client_time = f"'{client_date[0]}{client_date[1]}'" # ['2022-12-', '10', '-T14:00:00'] -> 2022-12-10
 
-        # select all data from table
-    #     with connection.cursor() as cursor:
-    #         select_all_rows = "SELECT * FROM `users`"
-    #         cursor.execute(select_all_rows)
-    #         rows = cursor.fetchall()
-    #         for row in rows:
-    #             print(row)
-    #         print('#' * 20)
-    # finally:
-    #     connection.close()
+        with connection.cursor() as cursor:
+            cursor.execute(f"SELECT * FROM `calendar` WHERE data = {get_client_time}")
+            info = cursor.fetchall()  # check what type (tuple or list)
+
+            if isinstance(info, tuple):  # if do not have this day in database -> crete new day in database
+                with connection.cursor() as cursor:
+                    cursor.execute(f"INSERT INTO `calendar` (data) VALUES ({get_client_time})")
+                    connection.commit()
+                return get_empty_space(client_date) # restart func
+
+            elif isinstance(info, list):  # if we already have day in database
+                # cheking what time is free | 0 = free , 1 = already took
+                space_first = False if info[0]['T14'] == '1' else True
+                space_second = False if info[0]['T15'] == '1' else True
+                space_third = False if info[0]['T16'] == '1' else True
+                return [space_first, space_second, space_third] # True = free cell, False = already took
+
+    # to took cell in day
+    def update_data(client_time: list, client_date: list):
+        time = f"T{client_time[0][:2]}" # 16:00 -> T16
+        get_client_time = f"'{client_date[0]}{client_date[1]}'" # ['2022-12-', '10', '-T14:00:00'] -> 2022-12-10
+        with connection.cursor() as cursor:
+            cursor.execute(f"UPDATE `calendar` SET {time} = '1' WHERE data = {get_client_time};") # free -> already took
+            connection.commit()
+
+
 except Exception as ex:
     print('Connection refuse ...')
     print(ex)
+
+
