@@ -110,7 +110,7 @@ def contact(message):
     client_name.append(message.contact.last_name)
     client_name.append(message.contact.phone_number)
     bot.send_message(message.chat.id, 'Отлично, я вас записала🤩')  # I wrote you down
-    total(client_date, client_description, client_name)  # send request to google calendar api
+    # total(client_date, client_description, client_name)  # send request to google calendar api
     update_data(client_time, client_date)  # send request to MySQL
 
 
