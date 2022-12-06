@@ -20,3 +20,4 @@ def what_month(next_now_month: int):
     for day in range(current_day, days_in_month + 1):  # make button in range 1-31 for days
         choice_day.insert(InlineKeyboardButton(text=str(day), callback_data=f'day:{day}'))
 
+    choice_day.row(InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"))

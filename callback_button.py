@@ -27,7 +27,7 @@ service_of_first_choice = InlineKeyboardMarkup(
             InlineKeyboardButton(text='😌Лицо 10 евро, 10 мин', callback_data="service:face"),
         ],
         [
-            InlineKeyboardButton(text='⬅️Назад', callback_data="first:back"),
+            InlineKeyboardButton(text='⬅️Назад', callback_data="back:first"),
         ],
     ]
 )
@@ -39,7 +39,7 @@ choice_month = InlineKeyboardMarkup(
             InlineKeyboardButton(text='➡️ Следующий месяц ➡️', callback_data="month:next_month"),
         ],
         [
-            InlineKeyboardButton(text='⬅️Назад', callback_data="first:back"),
+            InlineKeyboardButton(text='⬅️Назад', callback_data="back:first"),
         ],
     ]
 )
@@ -55,6 +55,9 @@ choice_time = InlineKeyboardMarkup(
         ],
         [
             InlineKeyboardButton(text='16:00', callback_data="time:16"),
+        ],
+        [
+            InlineKeyboardButton(text='⬅️Назад', callback_data="month:back"),
         ],
     ]
 )

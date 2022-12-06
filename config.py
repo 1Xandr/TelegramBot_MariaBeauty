@@ -7,6 +7,6 @@ password = "root"
 db_name = "telegramBotBase"
 
 # for telegramBot
-TelegramBotApi = '5976741272:AAE07_pL6jOB62Xv8tOZh-yO7lHRnnnZknU'
+TelegramBotApi = '5976741272:AAFVnAbePUEmCvDK0uG_1RcPbdi15ss6Y04'
 bot = Bot(token=TelegramBotApi)
 dp = Dispatcher(bot)
