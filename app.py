@@ -2,8 +2,8 @@ from aiogram import types
 from aiogram.dispatcher.filters import Command
 from aiogram.types import Message, CallbackQuery
 from aiogram.utils.executor import start_polling
-
-from callback_button import first_choice, service_of_first_choice, choice_day, choice_month, choice_time
+from days import what_month, choice_day
+from callback_button import first_choice, service_of_first_choice, choice_month, choice_time
 from config import dp
 
 
@@ -13,6 +13,11 @@ async def choice(message: Message):
                               'ошибку при создании записи то напишите или нажмите сюда 👉 /start\n\n'
                               '● Если возникли проблемы то нажмите \nсюда 👉 /help')
     await message.answer(text='Выберите Опцию👇', reply_markup=first_choice)
+
+@dp.callback_query_handler(text_contains='first:back')  # start bot
+async def second_start(call: CallbackQuery):
+    await call.message.edit_text(text='Выберите Опцию👇',)
+    await call.message.edit_reply_markup(reply_markup=first_choice)
 
 
 @dp.callback_query_handler(text_contains='depilation')  # if choose depilation
@@ -29,6 +34,7 @@ async def choice_of_month(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains='month')
 async def choice_of_day(call: CallbackQuery):
+    what_month(1 if call['data'] == 'month:next_month' else 0)
     await call.message.edit_text(text='Выбирите День👇')
     await call.message.edit_reply_markup(reply_markup=choice_day)
 

@@ -1,5 +1,4 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from days import current_day, days_in_month
 
 
 first_choice = InlineKeyboardMarkup(
@@ -27,6 +26,9 @@ service_of_first_choice = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(text='😌Лицо 10 евро, 10 мин', callback_data="service:face"),
         ],
+        [
+            InlineKeyboardButton(text='⬅️Назад', callback_data="first:back"),
+        ],
     ]
 )
 
@@ -36,25 +38,23 @@ choice_month = InlineKeyboardMarkup(
             InlineKeyboardButton(text='📅 Этот месяц 📅', callback_data='month:this_month'),
             InlineKeyboardButton(text='➡️ Следующий месяц ➡️', callback_data="month:next_month"),
         ],
+        [
+            InlineKeyboardButton(text='⬅️Назад', callback_data="first:back"),
+        ],
     ]
 )
-
-choice_day = InlineKeyboardMarkup(row_width=7)
-
-for day in range(current_day, days_in_month + 1):  # make button in range 1-31 for days
-    choice_day.insert(InlineKeyboardButton(text=str(day), callback_data=f'day:{day}'))
 
 
 choice_time = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='14:00', callback_data='time:two'),
+            InlineKeyboardButton(text='14:00', callback_data='time:14'),
         ],
         [
-            InlineKeyboardButton(text='15:00', callback_data="time:three"),
+            InlineKeyboardButton(text='15:00', callback_data="time:15"),
         ],
         [
-            InlineKeyboardButton(text='16:00', callback_data="time:four"),
+            InlineKeyboardButton(text='16:00', callback_data="time:16"),
         ],
     ]
 )
