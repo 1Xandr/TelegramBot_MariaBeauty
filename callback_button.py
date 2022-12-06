@@ -57,7 +57,7 @@ choice_time = InlineKeyboardMarkup(
             InlineKeyboardButton(text='16:00', callback_data="time:16"),
         ],
         [
-            InlineKeyboardButton(text='⬅️Назад', callback_data="month:back"),
+            InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"),
         ],
     ]
 )

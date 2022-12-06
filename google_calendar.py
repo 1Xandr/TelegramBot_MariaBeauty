@@ -29,28 +29,21 @@ obj = GoogleCalendar()
 name_calendar_id = 'sashacaha2019@gmail.com'
 
 
-def total(client_date, client_description, client_name):
-    total_name = ''
-    total_description = ''
-    time_cal = f'{client_date[0]}{client_date[1]}{client_date[2]}'
-    for i in client_description:
-        total_description += f'{i}, '
-
-    for i in client_name:
-        total_name += f'{i}, '
+def total(client_name: list, client_description: list, client_date: list, client_time: list):
+    # ['2023', '01', '26'] ['15'] - > '2023-01-26T15:00:00' | for google calendar API
+    date_cal = f'{client_date[0]}-{client_date[1]}-{client_date[2]}T{client_time[0]}:00:00'
 
     # Add event
     event = {
-        'summary': total_name,
-        'description': total_description,
+        'summary': f'{client_name[0]}, {client_name[1]}',
+        'description': f'{client_description}',
         'start': {
-            'dateTime': time_cal,
+            'dateTime': date_cal,
             'timeZone': 'Europe/Berlin',
         },
         'end': {
-            'dateTime': time_cal.replace(':00', ':40'),
+            'dateTime': date_cal.replace(':00', ':40'),
             'timeZone': 'Europe/Berlin',
         },
     }
     obj.add_event(calendar_id=name_calendar_id, body=event)
-

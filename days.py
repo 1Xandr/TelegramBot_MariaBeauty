@@ -20,4 +20,7 @@ def what_month(next_now_month: int):
     for day in range(current_day, days_in_month + 1):  # make button in range 1-31 for days
         choice_day.insert(InlineKeyboardButton(text=str(day), callback_data=f'day:{day}'))
 
+    month = f'0{month}' if len(str(month)) == 1 else str(month)  # 1 -> 01 | 12 -> 12
     choice_day.row(InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"))
+    # return number of month ('01') and year('2023')
+    return month, str(int(time.strftime('%Y')) + 1) if month == '01' else time.strftime('%Y')
