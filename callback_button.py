@@ -45,19 +45,19 @@ choice_month = InlineKeyboardMarkup(
 )
 
 
-choice_time = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='14:00', callback_data='time:14'),
-        ],
-        [
-            InlineKeyboardButton(text='15:00', callback_data="time:15"),
-        ],
-        [
-            InlineKeyboardButton(text='16:00', callback_data="time:16"),
-        ],
-        [
-            InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"),
-        ],
-    ]
-)
+# choice_time = InlineKeyboardMarkup(
+#     inline_keyboard=[
+#         [
+#             InlineKeyboardButton(text='14:00', callback_data='time:14'),
+#         ],
+#         [
+#             InlineKeyboardButton(text='15:00', callback_data="time:15"),
+#         ],
+#         [
+#             InlineKeyboardButton(text='16:00', callback_data="time:16"),
+#         ],
+#         [
+#             InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"),
+#         ],
+#     ]
+# )

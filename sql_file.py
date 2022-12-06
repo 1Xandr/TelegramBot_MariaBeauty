@@ -17,7 +17,7 @@ try:
     # to know what time free
     def get_empty_space(client_date: list):
 
-        get_client_time = f"'{client_date[0]}{client_date[1]}'" # ['2022-12-', '10', '-T14:00:00'] -> 2022-12-10
+        get_client_time = f"'{client_date[0]}-{client_date[1]}-{client_date[2]}'" # ['2023', '01', '26'] -> 2023-01-26
 
         with connection.cursor() as cursor:
             cursor.execute(f"SELECT * FROM `calendar` WHERE data = {get_client_time}")
@@ -38,8 +38,8 @@ try:
 
     # to took cell in day
     def update_data(client_time: list, client_date: list):
-        time = f"T{client_time[0][:2]}" # 16:00 -> T16
-        get_client_time = f"'{client_date[0]}{client_date[1]}'" # ['2022-12-', '10', '-T14:00:00'] -> 2022-12-10
+        time = f"T{client_time[0]}" # 16 -> T16
+        get_client_time = f"'{client_date[0]}-{client_date[1]}-{client_date[2]}'" # ['2023', '01', '26'] -> 2023-01-26
         with connection.cursor() as cursor:
             cursor.execute(f"UPDATE `calendar` SET {time} = '1' WHERE data = {get_client_time};") # free -> already took
             connection.commit()
