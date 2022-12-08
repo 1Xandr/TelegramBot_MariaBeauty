@@ -3,15 +3,16 @@ from aiogram.dispatcher.filters import Command
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.executor import start_polling
 from days import what_month, choice_day
-from callback_button import option_choice, service_of_first_choice, choice_month, first_choice, show_time
+from callback_button import option_choice, service_of_first_choice, choice_month, first_choice, show_time, back_to_entry
 from config import dp
-from google_calendar import total
+from google_calendar import total, get_calendar_data
 from sql_file import get_empty_space, update_data
 
 client_description = []  # Which service
 client_date = []  # Which date
 client_name = []  # Name and phone of user
 client_time = []  # Which time
+is_entry = []  # to know what user chose entry:my or entry:make
 
 @dp.message_handler(Command('help'))
 async def help(message: Message):
@@ -32,7 +33,19 @@ async def back_start(call: CallbackQuery):
     await call.message.edit_reply_markup(reply_markup=first_choice)
 
 
-@dp.callback_query_handler(text_contains='entry')  # choice option
+@dp.callback_query_handler(text_contains='entry:my')  # my entry
+async def back_start(call: CallbackQuery):
+    is_entry.append(True)  # if user chose entry:my | if not -> []
+    await call.message.delete_reply_markup()
+    await call.message.delete()
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    markup.add(types.KeyboardButton(text="📱 Отправить номер телефона👇", request_contact=True))
+
+    await call.message.answer("📲 Отправь свой контакт✅", reply_markup=markup)
+
+
+@dp.callback_query_handler(text_contains='entry:make')  # choice option
 async def work_with_entry(call: CallbackQuery):
     await call.message.edit_text(text='<b>🎀 Выберите Опцию👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=option_choice)
@@ -83,10 +96,11 @@ async def choice_of_time(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains='time')  # send contact
 async def get_contact(call: CallbackQuery):
+    is_entry.clear()  # if user restart bot | len(is_entry) != 0 -> show to user his data
     client_time.clear()  # if user restart bot
     client_time.append(call['data'][5:])  # append to list '16' | 'time:16' -> 16 | for google calendar API and SQL
 
-    update_data(client_time, client_date)  # send request to SQL
+    # update_data(client_time, client_date)  # send request to SQL
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     keyboard.add(types.KeyboardButton(text="📱 Отправить номер телефона👇", request_contact=True))
@@ -101,9 +115,16 @@ async def get_user_data(message: Message):
     client_name.clear()  # if user restart bot
     client_name.append(message['contact']['first_name'])  # append to list name | for google calendar API
     client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
+    if len(is_entry) == 0: # if user chose entry:make
+        # total(client_name, client_description, client_date, client_time)  # send request for google calendar API
+        await message.answer(text='<b>✅ Отлично, я вас записала🤩</b>', parse_mode='html', reply_markup=back_to_entry)
 
-    total(client_name, client_description, client_date, client_time)  # send request for google calendar API
-    await message.answer(text='<b>✅ Отлично, я вас записала🤩</b>', parse_mode='html')
+    else:  # if user chose entry:my
+        get_data = get_calendar_data(f'{client_name[0]}, {client_name[1]}')  # ['Александр', '380953241638']
+        text = '<b>Ваши записи:</b>\n\n'
+        for i in get_data[0]:  # for all data what we have
+            text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
+        await message.answer(text=text, reply_markup=back_to_entry, parse_mode='html')
 
 
 @dp.message_handler()  # for message which bot did not understand
