@@ -1,5 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from sql_file import get_empty_space
+
 first_choice = InlineKeyboardMarkup(
     inline_keyboard=[
         [
@@ -15,10 +17,13 @@ first_choice = InlineKeyboardMarkup(
 option_choice = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='😽 Реснички', callback_data='service:eyelashes')
+            InlineKeyboardButton(text='😽 Реснички', callback_data='service:eyelashes'),
         ],
         [
-            InlineKeyboardButton(text='👙 Депиляция', callback_data="depilation"),
+            InlineKeyboardButton(text='🚺 Депиляция', callback_data="depilation"),
+        ],
+        [
+            InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),
         ],
     ]
 )
@@ -54,3 +59,17 @@ choice_month = InlineKeyboardMarkup(
         ],
     ]
 )
+
+
+def show_time(client_date: list):
+    choice_time = InlineKeyboardMarkup(row_width=3)
+
+    free_space = get_empty_space(client_date)
+    # create button time [14:00, 15:00, 16:00 ...]
+    for time_but in range(len(free_space)):
+        choice_time.insert(InlineKeyboardButton(
+            text=f'1{time_but + 4}:00', callback_data=f'time:1{time_but + 4}')) if free_space[time_but] else None
+    # create button 'back'
+    choice_time.row(InlineKeyboardButton(text='⬅️Назад к выбору дня', callback_data="service:back"))
+
+    return choice_time

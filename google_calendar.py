@@ -47,3 +47,11 @@ def total(client_name: list, client_description: list, client_date: list, client
         },
     }
     obj.add_event(calendar_id=name_calendar_id, body=event)
+
+
+# event = obj.service.events().list(calendarId=name_calendar_id).execute()
+# print(event['items'])
+# # obj.service.events().delete(calendarId=name_calendar_id, eventId='lmoa6q24cgnr9n87cp4rv790uo').execute()
+# # print(event['items'])
+# def get_calendar_data():
+#     pass
