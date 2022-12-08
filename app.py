@@ -115,8 +115,10 @@ async def get_user_data(message: Message):
     client_name.clear()  # if user restart bot
     client_name.append(message['contact']['first_name'])  # append to list name | for google calendar API
     client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
+    remove_button = types.ReplyKeyboardRemove()
     if len(is_entry) == 0: # if user chose entry:make
         # total(client_name, client_description, client_date, client_time)  # send request for google calendar API
+        await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text='<b>✅ Отлично, я вас записала🤩</b>', parse_mode='html', reply_markup=back_to_entry)
 
     else:  # if user chose entry:my
@@ -124,6 +126,7 @@ async def get_user_data(message: Message):
         text = '<b>Ваши записи:</b>\n\n'
         for i in get_data[0]:  # for all data what we have
             text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
+        await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text=text, reply_markup=back_to_entry, parse_mode='html')
 
 
