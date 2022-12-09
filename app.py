@@ -13,6 +13,7 @@ client_date = []  # Which date
 client_name = []  # Name and phone of user
 client_time = []  # Which time
 is_entry = []  # to know what user chose entry:my or entry:make
+is_contact_yet = []
 
 @dp.message_handler(Command('help'))
 async def help(message: Message):
@@ -87,7 +88,8 @@ async def choice_of_day(call: CallbackQuery):
 async def choice_of_time(call: CallbackQuery):
     # append to list day | 'day:25' -> '25' | 'day:3' -> '03' | for google calendar API and SQL
     client_date.append(call['data'][4:] if len(call['data'][4:]) == 2 else f"0{call['data'][4:]}")
-
+    is_contact_yet.clear()  # If user restart bot
+    is_contact_yet.append(True)
     time_button = show_time(client_date)  # create time button
 
     await call.message.edit_text(text=f'<b>📍 Вы выбрали <U>{client_date[2]}</U> День\n⏳ Выбирите Время👇</b>', parse_mode='html')
@@ -99,8 +101,6 @@ async def get_contact(call: CallbackQuery):
     is_entry.clear()  # if user restart bot | len(is_entry) != 0 -> show to user his data
     client_time.clear()  # if user restart bot
     client_time.append(call['data'][5:])  # append to list '16' | 'time:16' -> 16 | for google calendar API and SQL
-
-    # update_data(client_time, client_date)  # send request to SQL
 
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     keyboard.add(types.KeyboardButton(text="📱 Отправить номер телефона👇", request_contact=True))
@@ -117,14 +117,17 @@ async def get_user_data(message: Message):
     client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
     remove_button = types.ReplyKeyboardRemove()
     if len(is_entry) == 0: # if user chose entry:make
-        # total(client_name, client_description, client_date, client_time)  # send request for google calendar API
+        # send request to other file
+        update_data(client_time, client_date)  # send request to SQL
+        total(client_name, client_description, client_date, client_time)  # send request for google calendar API
+
         await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text='<b>✅ Отлично, я вас записала🤩</b>', parse_mode='html', reply_markup=back_to_entry)
 
     else:  # if user chose entry:my
-        get_data = get_calendar_data(f'{client_name[0]}, {client_name[1]}')  # ['Александр', '380953241638']
+        get_data = get_calendar_data(', '.join(client_name))  # ['Alex', '123'] -> 'Alex, 123' # sent to google cal API
         text = '<b>Ваши записи:</b>\n\n'
-        for i in get_data[0]:  # for all data what we have
+        for i in range(len(get_data[1])):  # for all data what we have
             text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
         await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text=text, reply_markup=back_to_entry, parse_mode='html')

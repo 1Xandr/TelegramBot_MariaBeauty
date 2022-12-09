@@ -55,7 +55,7 @@ choice_month = InlineKeyboardMarkup(
             InlineKeyboardButton(text='➡️ Следующий месяц ➡️', callback_data="month:next_month"),
         ],
         [
-            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:back"),
+            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:make"),
         ],
     ]
 )
