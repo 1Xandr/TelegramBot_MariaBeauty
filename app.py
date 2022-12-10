@@ -55,7 +55,7 @@ async def work_with_entry(call: CallbackQuery):
 @dp.callback_query_handler(text_contains='depilation')  # choice depilation
 async def choice_of_depilation(call: CallbackQuery):
     client_description.clear()  # if user restart bot
-    client_description.append(call['data'])  # add 'service' to list for google calendar API
+    client_description.append('😽Депиляция')  # add 'service' to list for google calendar API
 
     await call.message.edit_text(text='<b>💚 Выбирите Зону👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=service_of_first_choice)
@@ -63,10 +63,22 @@ async def choice_of_depilation(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains='service')  # choice month
 async def choice_of_month(call: CallbackQuery):
-    client_description.pop(-1) if len(client_description) == 2 else None  # if user restart bot
+    if not call['data'] == 'service:back':  # in case if you click on back button then replace service -> back
+        client_description.pop(-1) if len(client_description) == 2 else None  # if user restart bot
     # if user restart bot and after depilation chose service:eyelashes
     client_description.pop(0) if call['data'] == 'service:eyelashes' and len(client_description) != 0 else None
-    client_description.append(call['data'])  # add 'service' to list for google calendar API
+    # add 'service' to list for google calendar API
+    match call['data']:  # translate for google calendar API and for entry:my
+        case 'service:eyelashes':
+            client_description.append('Реснички')
+        case 'service:bikini':
+            client_description.append('👙 Бикини 30 €, 20 мин')
+        case 'service:legs':
+            client_description.append('🦵 Ноги 45 €, 40 мин')
+        case 'service:arm':
+            client_description.append('💪 Руки 20 €, 15 мин')
+        case 'service:face':
+            client_description.append('😌 Лицо 10 €, 10 мин')
 
     await call.message.edit_text(text='<b>⠀             🗓️ Выбирите Месяц👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=choice_month)
@@ -115,7 +127,7 @@ async def get_user_data(message: Message):
     client_name.clear()  # if user restart bot
     client_name.append(message['contact']['first_name'])  # append to list name | for google calendar API
     client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
-    remove_button = types.ReplyKeyboardRemove()
+    remove_button = types.ReplyKeyboardRemove()  # for remove button "send phone"
     if len(is_entry) == 0: # if user chose entry:make
         # send request to other file
         update_data(client_time, client_date)  # send request to SQL

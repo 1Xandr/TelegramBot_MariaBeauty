@@ -36,7 +36,7 @@ def total(client_name: list, client_description: list, client_date: list, client
     # Add event
     event = {
         'summary': ', '.join(client_name),
-        'description': f'{client_description}',
+        'description': ''.join(client_description),
         'start': {
             'dateTime': date_cal,
             'timeZone': 'Europe/Berlin',
@@ -56,7 +56,8 @@ def get_calendar_data(name: str):
     for i in how_many:
         if event['items'][i]['summary'] == name:  # if name of user in calendar event
             info.append(f"Дата : {event['items'][i]['start']['dateTime'][:10]}\n" \
-                        f"Время : {event['items'][i]['start']['dateTime'][11:13]}:00\n\n")
+                        f"Время : {event['items'][i]['start']['dateTime'][11:13]}:00\n"
+                        f"Услуга :\n👉 {event['items'][i]['description']}\n\n")
     return how_many, info  # how_many -> int
 
 # obj.service.events().delete(calendarId=name_calendar_id, eventId='lmoa6q24cgnr9n87cp4rv790uo').execute()
