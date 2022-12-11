@@ -49,15 +49,28 @@ def total(client_name: list, client_description: list, client_date: list, client
     obj.add_event(calendar_id=name_calendar_id, body=event)
 
 
+# get entry of client
 def get_calendar_data(name: str):
     event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
     info = []  # create to collect info from user entry
     how_many = range(len(event['items']))  # how many entry has user
     for i in how_many:
         if event['items'][i]['summary'] == name:  # if name of user in calendar event
-            info.append(f"Дата : {event['items'][i]['start']['dateTime'][:10]}\n" \
-                        f"Время : {event['items'][i]['start']['dateTime'][11:13]}:00\n"
-                        f"Услуга :\n👉 {event['items'][i]['description']}\n\n")
-    return how_many, info  # how_many -> int
+            info.append(f"<b>Дата</b> : <u>{event['items'][i]['start']['dateTime'][:10]}</u>\n"
+                        f"<b>Время</b> : <u>{event['items'][i]['start']['dateTime'][11:13]}:00</u>\n"
+                        f"<b>Услуга</b> :\n🤍 <b>{event['items'][i]['description']}</b>\n"
+                        f"----------------------------------------\n")
+    return how_many, info  # how_many -> int, info -> list
 
-# obj.service.events().delete(calendarId=name_calendar_id, eventId='lmoa6q24cgnr9n87cp4rv790uo').execute()
+
+def get_delete_entry(name: str):
+    event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
+    data = get_calendar_data(name)
+    title = []
+    for i in data[0]:  # how_many | range(len(event['items']))
+        if event['items'][i]['summary'] == name:
+            date = f"{event['items'][i]['start']['dateTime'][:10]} |"  # 2022-12-11 |
+            time = f" {event['items'][i]['start']['dateTime'][11:13]}:00"  # 14:00
+            title.append('Удалить запись: ' + date + time)  # Удалить запись: 2022-12-11 | 14:00
+    # title -> 'Удалить запись: 2022-12-11 | 14:00' || data[0] -> how_many || data[1] -> info
+    return title, data[0], data[1]

@@ -8,8 +8,8 @@ first_choice = InlineKeyboardMarkup(
             InlineKeyboardButton(text='✏️ Записаться', callback_data='entry:make')
         ],
         [
-            InlineKeyboardButton(text='📂 Мои записи', callback_data="entry:my"),
-            InlineKeyboardButton(text='🗑️ Удалить запись', callback_data="entry:delete"),
+            InlineKeyboardButton(text='📂 Мои записи', callback_data="my_entry:my"),
+            InlineKeyboardButton(text='🗑️ Удалить запись', callback_data="my_entry:delete"),
         ],
     ]
 )
@@ -17,10 +17,10 @@ first_choice = InlineKeyboardMarkup(
 option_choice = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='😽 Реснички', callback_data='service:eyelashes'),
+            InlineKeyboardButton(text='🤍 Реснички 🤍', callback_data='service:eyelashes'),
         ],
         [
-            InlineKeyboardButton(text='🚺 Депиляция', callback_data="depilation"),
+            InlineKeyboardButton(text='🤍 Депиляция 🤍', callback_data="depilation"),
         ],
         [
             InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),
@@ -31,19 +31,19 @@ option_choice = InlineKeyboardMarkup(
 service_of_first_choice = InlineKeyboardMarkup(
     inline_keyboard=[
         [
-            InlineKeyboardButton(text='👙 Бикини 30 евро, 20 мин', callback_data='service:bikini')
+            InlineKeyboardButton(text='🤍 Бикини 30 евро, 20 мин 🤍', callback_data='service:bikini')
         ],
         [
-            InlineKeyboardButton(text='🦵 Ноги 45 евро, 40 мин', callback_data="service:legs"),
+            InlineKeyboardButton(text='🤍 Ноги 45 евро, 40 мин 🤍', callback_data="service:legs"),
         ],
         [
-            InlineKeyboardButton(text='💪 Руки 20 евро, 15 мин', callback_data='service:arm')
+            InlineKeyboardButton(text='🤍 Руки 20 евро, 15 мин 🤍', callback_data='service:arm')
         ],
         [
-            InlineKeyboardButton(text='😌 Лицо 10 евро, 10 мин', callback_data="service:face"),
+            InlineKeyboardButton(text='🤍 Лицо 10 евро, 10 мин 🤍', callback_data="service:face"),
         ],
         [
-            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:back"),
+            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:make"),
         ],
     ]
 )
@@ -78,3 +78,10 @@ def show_time(client_date: list):
     choice_time.row(InlineKeyboardButton(text='⬅️Назад к выбору дня', callback_data="service:back"))
 
     return choice_time  # return Markup
+
+
+def delete_entry_button(entry_data: list):
+    delete_entry_markup = InlineKeyboardMarkup(row_width=1)  # add markup
+    for i in entry_data:
+        delete_entry_markup.insert(InlineKeyboardButton(text=i, callback_data=f"delete:{entry_data[0][16:]}"))
+    return delete_entry_markup

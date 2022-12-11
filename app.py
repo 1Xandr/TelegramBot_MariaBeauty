@@ -3,9 +3,10 @@ from aiogram.dispatcher.filters import Command
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.executor import start_polling
 from days import what_month, choice_day
-from callback_button import option_choice, service_of_first_choice, choice_month, first_choice, show_time, back_to_entry
+from callback_button import option_choice, service_of_first_choice, choice_month, first_choice, show_time, \
+    back_to_entry, delete_entry_button
 from config import dp
-from google_calendar import total, get_calendar_data
+from google_calendar import total, get_calendar_data, delete_entry
 from sql_file import get_empty_space, update_data
 
 client_description = []  # Which service
@@ -34,8 +35,10 @@ async def back_start(call: CallbackQuery):
     await call.message.edit_reply_markup(reply_markup=first_choice)
 
 
-@dp.callback_query_handler(text_contains='entry:my')  # my entry
-async def back_start(call: CallbackQuery):
+@dp.callback_query_handler(text_contains='my_entry')  # my entry and delete entry
+async def entry(call: CallbackQuery):
+    if call['data'] == 'my_entry:delete':
+        is_entry.append(True)
     is_entry.append(True)  # if user chose entry:my | if not -> []
     await call.message.delete_reply_markup()
     await call.message.delete()
@@ -44,6 +47,10 @@ async def back_start(call: CallbackQuery):
     markup.add(types.KeyboardButton(text="📱 Отправить номер телефона👇", request_contact=True))
 
     await call.message.answer("📲 Отправь свой контакт✅", reply_markup=markup)
+
+@dp.callback_query_handler(text_contains='delete')  # my entry and delete entry
+async def delete(call: CallbackQuery):
+
 
 
 @dp.callback_query_handler(text_contains='entry:make')  # choice option
@@ -55,7 +62,7 @@ async def work_with_entry(call: CallbackQuery):
 @dp.callback_query_handler(text_contains='depilation')  # choice depilation
 async def choice_of_depilation(call: CallbackQuery):
     client_description.clear()  # if user restart bot
-    client_description.append('😽Депиляция')  # add 'service' to list for google calendar API
+    client_description.append('Депиляция ')  # add 'service' to list for google calendar API
 
     await call.message.edit_text(text='<b>💚 Выбирите Зону👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=service_of_first_choice)
@@ -72,13 +79,13 @@ async def choice_of_month(call: CallbackQuery):
         case 'service:eyelashes':
             client_description.append('Реснички')
         case 'service:bikini':
-            client_description.append('👙 Бикини 30 €, 20 мин')
+            client_description.append('Бикини 30 €, 20 мин')
         case 'service:legs':
-            client_description.append('🦵 Ноги 45 €, 40 мин')
+            client_description.append('Ноги 45 €, 40 мин')
         case 'service:arm':
-            client_description.append('💪 Руки 20 €, 15 мин')
+            client_description.append('Руки 20 €, 15 мин')
         case 'service:face':
-            client_description.append('😌 Лицо 10 €, 10 мин')
+            client_description.append('Лицо 10 €, 10 мин')
 
     await call.message.edit_text(text='<b>⠀             🗓️ Выбирите Месяц👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=choice_month)
@@ -136,14 +143,21 @@ async def get_user_data(message: Message):
         await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text='<b>✅ Отлично, я вас записала🤩</b>', parse_mode='html', reply_markup=back_to_entry)
 
-    else:  # if user chose entry:my
+    elif len(is_entry) == 1:  # if user chose my_entry:my
         get_data = get_calendar_data(', '.join(client_name))  # ['Alex', '123'] -> 'Alex, 123' # sent to google cal API
-        text = '<b>Ваши записи:</b>\n\n'
+        text = '<b>📘Ваши записи:</b>\n\n'
         for i in range(len(get_data[1])):  # for all data what we have
             text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
         await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
         await message.answer(text=text, reply_markup=back_to_entry, parse_mode='html')
-
+    else:  # if user chose my_entry:delete
+        # get_data [title -> 'Удалить запись: 2022-12-11 | 14:00' || data[0] -> how_many || data[1] -> info]
+        get_data = delete_entry(', '.join(client_name))  # ['Alex', '123'] -> 'Alex, 123' # sent to google cal API
+        text = '<b>📘Ваши записи:</b>\n\n'
+        for i in range(len(get_data[2])):  # for all data what we have
+            text += get_data[2][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
+        await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
+        await message.answer(text=text, reply_markup=delete_entry_button(get_data[0]), parse_mode='html')
 
 @dp.message_handler()  # for message which bot did not understand
 async def catch_random_message(message: Message):
