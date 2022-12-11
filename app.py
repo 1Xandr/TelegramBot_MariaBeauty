@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKe
 from aiogram.utils.executor import start_polling
 from days import what_month, choice_day
 from callback_button import option_choice, service_of_first_choice, choice_month, first_choice, show_time, \
-    back_to_entry, delete_entry_button
+    back_to_entry, delete_entry_button, delete_or_not
 from config import dp
 from google_calendar import total, get_calendar_data, delete_event
 from sql_file import get_empty_space, update_data, put_away_cell
@@ -14,7 +14,7 @@ client_date = []  # Which date
 client_name = []  # Name and phone of user
 client_time = []  # Which time
 is_entry = []  # to know what user chose entry:my or entry:make
-is_contact_yet = []
+count_for_sql_delete = []  # for delete entry| which entry user want to delet
 
 @dp.message_handler(Command('help'))
 async def help(message: Message):
@@ -48,12 +48,27 @@ async def entry(call: CallbackQuery):
 
     await call.message.answer("📲 Отправь свой контакт✅", reply_markup=markup)
 
+
+@dp.callback_query_handler(text_contains='try_delete')  # are you sure you want to delete entry?
+async def try_delete(call: CallbackQuery):
+    name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
+    count_for_sql_delete.clear()  # if user restart bot
+    count_for_sql_delete.append(int(call['data'][-1])) # 'delete:0' -> '0'
+    count = count_for_sql_delete[0]  # [0] -> 0
+    date_for_sql = get_calendar_data(name)[4][count:count + 2]  # get date and time for user
+    await call.message.edit_text(text=f'📕 <b>Удалить эту запись?</b>' 
+                                      f'\n<b>Дата:</b> <u>{date_for_sql[0]}</u> <b>Время:</b> '
+                                      f'<u>{date_for_sql[1][1:]}:00</u>',
+                                        parse_mode='html')
+    await call.message.edit_reply_markup(delete_or_not)  # yes | no
+
+
 @dp.callback_query_handler(text_contains='delete')  # my entry and delete entry
 async def delete(call: CallbackQuery):
+    count = count_for_sql_delete[0]  # [0] -> 0
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
-    count = int(call['data'][-1])  # 'delete:0' -> '0'
     event_id = get_calendar_data(name)[3][count]  # get_calendar_data[eventID][0] -> '9vfge4sqhdi1ef32kfgjh2fj2s'
-    date_for_sql = get_calendar_data(name)[4]  # get date and time from google calendar for SQL
+    date_for_sql = get_calendar_data(name)[4][count:count+2]  # get date and time from google calendar for SQL
     delete_event(event_id) # send request to delete_event
     put_away_cell(date_for_sql)  # send request to SQL for free cell 1 -> 0
 
@@ -110,8 +125,8 @@ async def choice_of_day(call: CallbackQuery):
 async def choice_of_time(call: CallbackQuery):
     # append to list day | 'day:25' -> '25' | 'day:3' -> '03' | for google calendar API and SQL
     client_date.append(call['data'][4:] if len(call['data'][4:]) == 2 else f"0{call['data'][4:]}")
-    is_contact_yet.clear()  # If user restart bot
-    is_contact_yet.append(True)
+    # is_contact_yet.clear()  # If user restart bot
+    # is_contact_yet.append(True)
     time_button = show_time(client_date)  # create time button
 
     await call.message.edit_text(text=f'<b>📍 Вы выбрали <U>{client_date[2]}</U> День\n⏳ Выбирите Время👇</b>', parse_mode='html')
