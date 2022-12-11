@@ -82,6 +82,10 @@ def show_time(client_date: list):
 
 def delete_entry_button(entry_data: list):
     delete_entry_markup = InlineKeyboardMarkup(row_width=1)  # add markup
+    count = 0
     for i in entry_data:
-        delete_entry_markup.insert(InlineKeyboardButton(text=i, callback_data=f"delete:{entry_data[0][16:]}"))
+        delete_entry_markup.insert(InlineKeyboardButton(text=i, callback_data=f"delete:{count}"))
+        count += 1
+    # make back button
+    delete_entry_markup.row(InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),)
     return delete_entry_markup

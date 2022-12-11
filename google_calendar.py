@@ -29,48 +29,56 @@ obj = GoogleCalendar()
 name_calendar_id = 'sashacaha2019@gmail.com'
 
 
+# create event in google calendar
 def total(client_name: list, client_description: list, client_date: list, client_time: list):
     # ['2023', '01', '26'] ['15'] - > '2023-01-26T15:00:00' | for google calendar API
     date_cal = f'{"-".join(client_date)}T{client_time[0]}:00:00'
 
     # Add event
     event = {
-        'summary': ', '.join(client_name),
-        'description': ''.join(client_description),
+        'summary': ', '.join(client_name),  # ['Alex', '123'] -> 'Alex, 123'
+        'description': ''.join(client_description),  # ['Депиляция', 'Бикини'] -> Депиляция, Бикини
         'start': {
-            'dateTime': date_cal,
+            'dateTime': date_cal,  # '2023-01-26T15:00:00'
             'timeZone': 'Europe/Berlin',
         },
         'end': {
-            'dateTime': date_cal.replace(':00', ':40'),
+            'dateTime': date_cal.replace(':00', ':40'),  # '2023-01-26T15:00:00' ->  '2023-01-26T15:40:00'
             'timeZone': 'Europe/Berlin',
         },
     }
-    obj.add_event(calendar_id=name_calendar_id, body=event)
+    obj.add_event(calendar_id=name_calendar_id, body=event)  # add event into google calendar
 
 
 # get entry of client
 def get_calendar_data(name: str):
     event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
     info = []  # create to collect info from user entry
+    title = []  # create for text of button
+    event_id = []  # collect eventID for (delete_event)
+    date_for_sql = []
     how_many = range(len(event['items']))  # how many entry has user
     for i in how_many:
         if event['items'][i]['summary'] == name:  # if name of user in calendar event
-            info.append(f"<b>Дата</b> : <u>{event['items'][i]['start']['dateTime'][:10]}</u>\n"
-                        f"<b>Время</b> : <u>{event['items'][i]['start']['dateTime'][11:13]}:00</u>\n"
-                        f"<b>Услуга</b> :\n🤍 <b>{event['items'][i]['description']}</b>\n"
-                        f"----------------------------------------\n")
-    return how_many, info  # how_many -> int, info -> list
 
-
-def get_delete_entry(name: str):
-    event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
-    data = get_calendar_data(name)
-    title = []
-    for i in data[0]:  # how_many | range(len(event['items']))
-        if event['items'][i]['summary'] == name:
-            date = f"{event['items'][i]['start']['dateTime'][:10]} |"  # 2022-12-11 |
+            # for my_entry:delete
+            date = f"{event['items'][i]['start']['dateTime'][:10]} "  # 2022-12-11
             time = f" {event['items'][i]['start']['dateTime'][11:13]}:00"  # 14:00
             title.append('Удалить запись: ' + date + time)  # Удалить запись: 2022-12-11 | 14:00
-    # title -> 'Удалить запись: 2022-12-11 | 14:00' || data[0] -> how_many || data[1] -> info
-    return title, data[0], data[1]
+            event_id.append(event['items'][i]['id'])  # append eventID
+
+            # 2022-12-11T15:00:00+01:00 -> '"2022-12-11"' | 'T15'
+            date_for_sql.append(f"{event['items'][1]['start']['dateTime'][:10]}")  # add date
+            date_for_sql.append(f"T{event['items'][1]['start']['dateTime'][11:13]}")  # add time
+
+            # for my_entry:my
+            info.append(f"<b>Дата</b> : <u>{date}</u>\n"
+                        f"<b>Время</b> : <u>{time}</u>\n"
+                        f"<b>Услуга</b> :\n🤍 <b>{event['items'][i]['description']}</b>\n"
+                        f"----------------------------------------\n")
+
+    return how_many, info, title, event_id, date_for_sql
+
+
+def delete_event(event_id: str):  # delete event
+    obj.service.events().delete(calendarId=name_calendar_id, eventId=event_id).execute()
