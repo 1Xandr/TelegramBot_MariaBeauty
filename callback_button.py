@@ -78,6 +78,15 @@ delete_or_not = InlineKeyboardMarkup(
     ]
 )
 
+confirm_date = InlineKeyboardMarkup(
+    inline_keyboard=[
+            [
+                InlineKeyboardButton(text='✅ Да', callback_data="confirm:yes"),
+                InlineKeyboardButton(text='❌ Нет', callback_data="day:back_to_time"),
+            ],
+    ]
+)
+
 
 def show_time(client_date: list):
     choice_time = InlineKeyboardMarkup(row_width=3)
