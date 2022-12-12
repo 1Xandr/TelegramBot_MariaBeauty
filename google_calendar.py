@@ -56,7 +56,7 @@ def get_calendar_data(name: str):
     info = []  # create to collect info from user entry
     title = []  # create for text of button
     event_id = []  # collect eventID for (delete_event)
-    date_for_sql = []
+    date_for_sql = []  # for SQL
     how_many = range(len(event['items']))  # how many entry has user
     for i in how_many:
         if event['items'][i]['summary'] == name:  # if name of user in calendar event
@@ -64,12 +64,12 @@ def get_calendar_data(name: str):
             # for my_entry:delete
             date = f"{event['items'][i]['start']['dateTime'][:10]}"  # 2022-12-11
             time = f" {event['items'][i]['start']['dateTime'][11:13]}:00"  # 14:00
-            title.append('Удалить запись: ' + date + time)  # Удалить запись: 2022-12-11 | 14:00
+            title.append(['Удалить запись: ', date, time])  # [Удалить запись: , '2022-12-11', '14:00']
             event_id.append(event['items'][i]['id'])  # append eventID
 
             # 2022-12-11T15:00:00+01:00 -> '"2022-12-11"' | 'T15'
-            date_for_sql.append(f"{event['items'][i]['start']['dateTime'][:10]}")  # add date
-            date_for_sql.append(f"T{event['items'][i]['start']['dateTime'][11:13]}")  # add time
+            date_for_sql.append(f"{event['items'][i]['start']['dateTime'][:10]}"  # add date 
+                                f"T{event['items'][i]['start']['dateTime'][11:13]}")  # add time
 
             # for my_entry:my
             info.append(f"<b>Дата</b> : <u>{date}</u>\n"

@@ -69,16 +69,17 @@ async def delete_interface(call: CallbackQuery):
     await call.message.edit_text(text=text,parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=delete_entry_button(get_data[2]))
 
+
 @dp.callback_query_handler(text_contains='try_delete')  # are you sure you want to delete entry?
 async def try_delete(call: CallbackQuery):
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
     count_for_sql_delete.clear()  # if user clicked to back button
     count_for_sql_delete.append(int(call['data'][-1])) # 'delete:0' -> '0'
     count = count_for_sql_delete[0]  # [0] -> 0
-    date_for_sql = get_calendar_data(name)[4][count:count + 2]  # get date and time for user
+    data_time = get_calendar_data(name)[2][count]  # 2022-12-12 14:00
     await call.message.edit_text(text=f'📕 <b>Удалить эту запись?</b>'
-                                      f'\n<b>Дата:</b> <u>{date_for_sql[0]}</u> <b>Время:</b> '
-                                      f'<u>{date_for_sql[1][1:]}:00</u>',
+                                      f'\n<b>Дата:</b> <u>{data_time[1]}</u> <b>Время:</b> ' # 2022-12-12
+                                      f'<u>{data_time[2]}</u>',  # 14:00
                                         parse_mode='html')
     await call.message.edit_reply_markup(delete_or_not)  # yes | no
 #
@@ -88,7 +89,7 @@ async def delete(call: CallbackQuery):
     count = count_for_sql_delete[0]  # [0] -> 0
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
     event_id = get_calendar_data(name)[3][count]  # get_calendar_data[eventID][0] -> '9vfge4sqhdi1ef32kfgjh2fj2s'
-    date_for_sql = get_calendar_data(name)[4][count:count+2]  # get date and time from google calendar for SQL
+    date_for_sql = get_calendar_data(name)[4][count]  # get date and time from google calendar for SQL
     delete_event(event_id) # send request to delete_event
     put_away_cell(date_for_sql)  # send request to SQL for free cell 1 -> 0
 

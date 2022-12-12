@@ -1,5 +1,6 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+from days import current_date
 from sql_file import get_empty_space
 
 first_choice = InlineKeyboardMarkup(
@@ -103,9 +104,11 @@ def show_time(client_date: list):
 def delete_entry_button(entry_data: list):
     delete_entry_markup = InlineKeyboardMarkup(row_width=1)  # add markup
     count = 0
-    for i in entry_data:
-        delete_entry_markup.insert(InlineKeyboardButton(text=i, callback_data=f"try_delete:{count}"))
-        count += 1
-    # make back button
+    for i in entry_data:  # ['Удалить запись: ', date, time]
+        check_data = int(''.join(i[1].split('-')))  # '2022-12-12' -> 20221212
+        current = current_date()  # current year, month, day -> 20221212
+        if check_data >= current:
+            delete_entry_markup.insert(InlineKeyboardButton(text=' '.join(i), callback_data=f"try_delete:{count}"))
+            count += 1
     delete_entry_markup.row(InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),)
     return delete_entry_markup
