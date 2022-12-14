@@ -22,7 +22,7 @@ def what_month(next_now_month: int):
 
     month = f'0{month}' if len(str(month)) == 1 else str(month)  # 1 -> 01 | 12 -> 12
     # make button back
-    choice_day.row(InlineKeyboardButton(text='⬅️Назад к выбору месяца', callback_data="service:back"))
+    choice_day.row(InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"))
     # return number of month ('01') and year('2023')
     return month, str(int(time.strftime('%Y')) + 1) if month == '01' else time.strftime('%Y')  # 12+1, 2022 --> 01, 2023
 
@@ -31,5 +31,5 @@ def what_month(next_now_month: int):
 def current_date() -> int:
     year = time.strftime('%Y')  # 2022
     month = time.strftime('%m')  # 12
-    day = time.strftime('%m')  # 31
+    day = time.strftime('%d')  # 31
     return int(year + month + day)

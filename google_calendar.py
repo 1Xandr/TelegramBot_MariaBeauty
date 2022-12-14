@@ -68,8 +68,8 @@ def get_calendar_data(name: str):
             event_id.append(event['items'][i]['id'])  # append eventID
 
             # 2022-12-11T15:00:00+01:00 -> '"2022-12-11"' | 'T15'
-            date_for_sql.append(f"{event['items'][i]['start']['dateTime'][:10]}"  # add date 
-                                f"T{event['items'][i]['start']['dateTime'][11:13]}")  # add time
+            date_for_sql.append(f"{event['items'][i]['start']['dateTime'][:10]} "  # add date
+                                f"{event['items'][i]['start']['dateTime'][10:13]}")  # add time
 
             # for my_entry:my
             info.append(f"<b>Дата</b> : <u>{date}</u>\n"
@@ -82,3 +82,11 @@ def get_calendar_data(name: str):
 
 def delete_event(event_id: str):  # delete event
     obj.service.events().delete(calendarId=name_calendar_id, eventId=event_id).execute()
+
+
+def my_entry_list(client_name: list) -> str and list:
+    get_data = get_calendar_data(', '.join(client_name))  # ['Alex', '123'] -> 'Alex, 123'
+    text = '<b>📘Ваши записи:</b>\n\n'  # text for message.edit_text
+    for i in range(len(get_data[1])):  # for all data what we have
+        text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
+    return text, get_data[2]

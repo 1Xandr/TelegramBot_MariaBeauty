@@ -2,113 +2,136 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from days import current_date
 from sql_file import get_empty_space
+from translate import translate_button as trl
 
-first_choice = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='✏️ Записаться', callback_data='entry:make')
-        ],
-        [
-            InlineKeyboardButton(text='📂 Мои записи', callback_data="my_entry:my"),
-            InlineKeyboardButton(text='🗑️ Удалить запись', callback_data="my_entry:delete"),
-        ],
-    ]
-)
 
-option_choice = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='😽 Реснички 🤍', callback_data='service:eyelashes'),
-        ],
-        [
-            InlineKeyboardButton(text='❤️ Депиляция 🤍', callback_data="depilation"),
-        ],
-        [
-            InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),
-        ],
-    ]
-)
-
-service_of_first_choice = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='👙 Бикини 30 евро, 20 мин 🤍', callback_data='service:bikini')
-        ],
-        [
-            InlineKeyboardButton(text='🦶🏻 Ноги 45 евро, 40 мин 🤍', callback_data="service:legs"),
-        ],
-        [
-            InlineKeyboardButton(text='🫳🏻 Руки 20 евро, 15 мин 🤍', callback_data='service:arm')
-        ],
-        [
-            InlineKeyboardButton(text='😁 Лицо 10 евро, 10 мин 🤍', callback_data="service:face"),
-        ],
-        [
-            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:make"),
-        ],
-    ]
-)
-
-choice_month = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text='📅 Этот месяц 📅', callback_data='month:this_month'),
-            InlineKeyboardButton(text='➡️ Следующий месяц ➡️', callback_data="month:next_month"),
-        ],
-        [
-            InlineKeyboardButton(text='⬅️ Назад к выбору Опциии', callback_data="entry:make"),
-        ],
-    ]
-)
-back_to_entry = InlineKeyboardMarkup(
-    inline_keyboard=[
+def first_choice(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
             [
-                InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),
-            ]
-    ]
-)
-
-delete_or_not = InlineKeyboardMarkup(
-    inline_keyboard=[
-            [
-                InlineKeyboardButton(text='✅ Удалить', callback_data="delete"),
+                InlineKeyboardButton(text=f'✏️ {trl(language, "Зап")}', callback_data='entry:make')
             ],
             [
-                InlineKeyboardButton(text='⬅️ Назад к выбору', callback_data="my_entry:delete"),
-            ]
-    ]
-)
-
-confirm_date = InlineKeyboardMarkup(
-    inline_keyboard=[
-            [
-                InlineKeyboardButton(text='✅ Да', callback_data="confirm:yes"),
-                InlineKeyboardButton(text='❌ Нет', callback_data="day:back_to_time"),
+                InlineKeyboardButton(text=f'📂 {trl(language, "Мзап")}', callback_data="my_entry:my"),
+                InlineKeyboardButton(text=f'🗑️ {trl(language, "Узап")}', callback_data="my_entry:delete"),
             ],
-    ]
-)
+            [
+                InlineKeyboardButton(text=f'{trl(language, "Язык")}',
+                                     callback_data=f'language:{"ru" if language else "ua"}')
+            ]
+        ]
+    )
 
 
-def show_time(client_date: list):
+def option_choice(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=f'😽 {trl(language, "Ресн")}', callback_data='service:eyelashes'),
+            ],
+            [
+                InlineKeyboardButton(text=f'❤️ {trl(language, "Деп")}', callback_data="depilation"),
+            ],
+            [
+                InlineKeyboardButton(text=f'⬅️ {trl(language, "НДей")}', callback_data="first:back"),
+            ],
+        ]
+    )
+
+
+def service_of_first_choice(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=f'👙 {trl(language, "Бикини")}', callback_data='service:bikini')
+            ],
+            [
+                InlineKeyboardButton(text=f'🦵 {trl(language, "Ноги")}', callback_data="service:legs"),
+            ],
+            [
+                InlineKeyboardButton(text=f'💪 {trl(language, "Руки")}', callback_data='service:arm')
+            ],
+            [
+                InlineKeyboardButton(text=f'😌 {trl(language, "Лицо")}', callback_data="service:face"),
+            ],
+            [
+                InlineKeyboardButton(text=f'⬅️ {trl(language, "НОпц")}', callback_data="entry:make"),
+            ],
+        ]
+    )
+
+
+def choice_month(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=f'📅 {trl(language, "Этотм")} 📅', callback_data='month:this_month'),
+                InlineKeyboardButton(text=f'➡️ {trl(language, "Следм")} ➡️', callback_data="month:next_month"),
+            ],
+            [
+                InlineKeyboardButton(text=f'⬅️ {trl(language, "НОпц")}', callback_data="entry:make"),
+            ],
+        ]
+    )
+
+
+def back_to_entry(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+                [
+                    InlineKeyboardButton(text=f'⬅️ {trl(language, "НДей")}', callback_data="first:back"),
+                ]
+        ]
+    )
+
+
+def delete_or_not(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+                [
+                    InlineKeyboardButton(text=f'✅ {trl(language, "Удал")}', callback_data="delete"),
+                ],
+                [
+                    InlineKeyboardButton(text=f'⬅️ {trl(language, "Нвыбору")}', callback_data="my_entry:delete"),
+                ]
+        ]
+    )
+
+
+def confirm_date(language: bool):
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+                [
+                    InlineKeyboardButton(text=f'✅ {"Так" if language else "Да"}', callback_data="confirm:yes"),
+                    InlineKeyboardButton(text=f'❌ {"Ні" if language else  "Нет"}', callback_data="day:back_to_time"),
+                ],
+        ]
+    )
+
+
+def show_time(client_date: list, language: bool):
     choice_time = InlineKeyboardMarkup(row_width=3)
     free_space = get_empty_space(client_date)  # get info from SQL, how many cell in day we have
     for time_but in range(len(free_space)):  # create button time [14:00, 15:00, 16:00 ...]
         choice_time.insert(InlineKeyboardButton(
             text=f'1{time_but + 4}:00', callback_data=f'time:1{time_but + 4}')) if free_space[time_but] else None
     # create button 'back'
-    choice_time.row(InlineKeyboardButton(text='⬅️Назад к выбору дня', callback_data="service:back"))
+    choice_time.row(InlineKeyboardButton(text=f'⬅️{trl(language, "Ндня")}', callback_data="service:back"))
 
     return choice_time  # return Markup
 
 
-def delete_entry_button(entry_data: list):
+def delete_entry_button(entry_data: list, language: bool):
     delete_entry_markup = InlineKeyboardMarkup(row_width=1)  # add markup
     count = 0
     for i in entry_data:  # ['Удалить запись: ', date, time]
         check_data = int(''.join(i[1].split('-')))  # '2022-12-12' -> 20221212
         current = current_date()  # current year, month, day -> 20221212
-        if check_data >= current:
-            delete_entry_markup.insert(InlineKeyboardButton(text=' '.join(i), callback_data=f"try_delete:{count}"))
-            count += 1
-    delete_entry_markup.row(InlineKeyboardButton(text='⬅️ Назад к выбору Действия', callback_data="first:back"),)
+        if check_data >= current:  # if entry not in the past, user can delete it
+            text = ' '.join(i)
+            text = text.replace('Удалить запись', "Видалити запис") if language else text
+            text = text.replace('Время', "Час") if language else text
+            delete_entry_markup.insert(InlineKeyboardButton(text=text, callback_data=f"try_delete:{count}"))
+        count += 1
+    delete_entry_markup.row(InlineKeyboardButton(text=f'⬅️ {trl(language, "НДей")}', callback_data="first:back"))
     return delete_entry_markup
