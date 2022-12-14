@@ -15,6 +15,7 @@ client_name = []  # Name and phone of user
 client_time = []  # Which time
 count_for_sql_delete = []  # for delete entry | which entry user want to delet
 language = [False]  # False -> language russian | True language ukraine
+client_id = []  # verification of user | did user send his contact | if not -> bot will not work
 
 @dp.message_handler(Command('help'))
 async def help(message: Message):
@@ -24,6 +25,8 @@ async def help(message: Message):
 
 @dp.message_handler(Command('start')) # start bot
 async def start(message: Message):
+    client_id.append(message["from"]["id"])
+
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     markup.add(types.KeyboardButton(text="📱 Отправить номер телефона👇", request_contact=True))
 
@@ -32,16 +35,19 @@ async def start(message: Message):
 
 @dp.message_handler(content_types=types.ContentType.CONTACT) # get data from user
 async def get_user_data(message: Message):
-    client_name.clear()  # if user clicked to back button
-    client_name.append(message['contact']['first_name'])  # append to list name | for google calendar API
-    client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
-    remove_button = types.ReplyKeyboardRemove()  # for remove button "send phone"
-    await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
-    await message.answer(text='-----------------------------\n\n'
-                              '● Привет, Здесь вы можете записаться с Пн - Пт\n\n '  # title
-                              '● Если возникли проблемы\nто нажмите сюда 👉 /help\n\n-----------------------------')
-    await message.answer(text='<b>⠀       💛 Выберите Действие👇</b>', parse_mode='html',
-                         reply_markup=first_choice(language[0]))
+    if message['contact']["user_id"] != client_id[0]:  # if user try to send not his contact
+        await message.answer('Id Пользователей не совпадает')
+    else:  # if user send his contact
+        client_name.clear()  # if user clicked to back button
+        client_name.append(message['contact']['first_name'])  # append to list name | for google calendar API
+        client_name.append(message['contact']['phone_number'])  # append to list phone number | for google calendar API
+        remove_button = types.ReplyKeyboardRemove()  # for remove button "send phone"
+        await message.answer('✅', reply_markup=remove_button)  # remove keyboard markup
+        await message.answer(text='-----------------------------\n\n'
+                                  '● Привет, Здесь вы можете записаться с Пн - Пт\n\n '  # title
+                                  '● Если возникли проблемы\nто нажмите сюда 👉 /help\n\n-----------------------------')
+        await message.answer(text='<b>⠀       💛 Выберите Действие👇</b>', parse_mode='html',
+                             reply_markup=first_choice(language[0]))
 
 
 @dp.callback_query_handler(text_contains='language:ua')  # if user want to change langue to ukrainian
@@ -109,7 +115,7 @@ async def delete(call: CallbackQuery):
     await call.answer(text='Запись удалена')  # show text
 
     await call.message.edit_text(text='<b>⠀       💛 Выберите Действие👇</b>', parse_mode='html')
-    await call.message.edit_reply_markup(first_choice_ua if language[0] else first_choice)
+    await call.message.edit_reply_markup(first_choice(language[0]))
 
 
 @dp.callback_query_handler(text_contains='entry:make')  # choice option

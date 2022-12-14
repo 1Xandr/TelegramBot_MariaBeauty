@@ -46,7 +46,7 @@ def translate_button(language: bool, which_text: str) -> str:
         # show_time
         case "Ндня": return "Назад до вибору дня" if language else "Назад к выбору дня"
         # delete_or_not
-        case "Удал": return "Вилучити" if language else "Удалить"
+        case "Удал": return "Видалити" if language else "Удалить"
         case "Нвыбору": return "Назад до вибору" if language else "Назад к выбору"
         # first_choice
         case "Зап": return "Записатись" if language else "Записаться"
