@@ -108,7 +108,6 @@ async def delete(call: CallbackQuery):
     count = count_for_sql_delete[0]  # [0] -> 0
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
     event_id = get_calendar_data(name)[3][count]  # get_calendar_data[eventID][0] -> '9vfge4sqhdi1ef32kfgjh2fj2s'
-    date_for_sql = get_calendar_data(name)[4][count]  # get date and time from google calendar for SQL
     delete_event(event_id) # send request to delete_event
     await call.answer(text='Запись удалена')  # show text
 
