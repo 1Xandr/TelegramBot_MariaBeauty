@@ -92,9 +92,10 @@ def my_entry_list(client_name: list) -> str and list:
     return text, get_data[2]
 
 
-def check_free_space(date: str):
+def check_free_space(date: str) -> bool:  # if date that user chose was free -> True
     all_date = []  # date that user can not make an entry
     for events in all_event['items']:
         all_date.append(events["start"]["dateTime"].split(":")[0])  # 2022-01-31T16:00:00+01:00' -> 2022-01-31T16
     if not date in all_date:
-        print('hello')
+        return True
+    return False

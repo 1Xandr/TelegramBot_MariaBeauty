@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from days import current_date
-from sql_file import get_empty_space
+from google_calendar import check_free_space as cfs
 from translate import translate_button as trl
 
 
@@ -111,11 +111,13 @@ def confirm_date(language: bool):
 
 def show_time(client_date: list, language: bool):
     choice_time = InlineKeyboardMarkup(row_width=3)
-    free_space = get_empty_space(client_date)  # get info from SQL, how many cell in day we have
-    for time_but in range(len(free_space)):  # create button time [14:00, 15:00, 16:00 ...]
+    # free_space = get_empty_space(client_date)  # get info from SQL, how many cell in day we have
+    date = '-'.join(client_date)
+    for time_but in range(3):
+        button_time = time_but + 14  # 14 || 15 || 16
         choice_time.insert(InlineKeyboardButton(
-            text=f'1{time_but + 4}:00', callback_data=f'time:1{time_but + 4}')) if free_space[time_but] else None
-    # create button 'back'
+            text=f'{button_time}:00', callback_data=f'time:{button_time}'
+        )) if cfs(date + f"T{button_time}") else None
     choice_time.row(InlineKeyboardButton(text=f'⬅️{trl(language, "Ндня")}', callback_data="service:back"))
 
     return choice_time  # return Markup

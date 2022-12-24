@@ -6,7 +6,6 @@ from days import what_month, choice_day
 from callback_button import *
 from config import dp
 from google_calendar import total, get_calendar_data, delete_event, my_entry_list
-from sql_file import get_empty_space, update_data, put_away_cell
 from translate import translate_app as trl
 
 client_description = []  # Which service
@@ -111,7 +110,6 @@ async def delete(call: CallbackQuery):
     event_id = get_calendar_data(name)[3][count]  # get_calendar_data[eventID][0] -> '9vfge4sqhdi1ef32kfgjh2fj2s'
     date_for_sql = get_calendar_data(name)[4][count]  # get date and time from google calendar for SQL
     delete_event(event_id) # send request to delete_event
-    put_away_cell(date_for_sql.split(' '))  # send request to SQL for free cell 1 -> 0
     await call.answer(text='Запись удалена')  # show text
 
     await call.message.edit_text(text='<b>⠀       💛 Выберите Действие👇</b>', parse_mode='html')
@@ -187,7 +185,6 @@ async def get_contact(call: CallbackQuery):
 
 @dp.callback_query_handler(text_contains='confirm:yes')  # before send to gooogle cal and SQL
 async def confirm_entry(call: CallbackQuery):
-    update_data(client_time, client_date)  # send request to SQL
     total(client_name, client_description, client_date, client_time)  # send request for google calendar API
 
     await call.message.edit_text(text=f'<b>✅ {trl(language[0], "Отлично")}🤩</b>', parse_mode='html')
