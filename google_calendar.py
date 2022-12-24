@@ -27,6 +27,7 @@ class GoogleCalendar:
 
 obj = GoogleCalendar()
 name_calendar_id = 'sashacaha2019@gmail.com'
+all_event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
 
 
 # create event in google calendar
@@ -52,29 +53,28 @@ def total(client_name: list, client_description: list, client_date: list, client
 
 # get entry of client
 def get_calendar_data(name: str):
-    event = obj.service.events().list(calendarId=name_calendar_id).execute()  # get data from all event
     info = []  # create to collect info from user entry
     title = []  # create for text of button
     event_id = []  # collect eventID for (delete_event)
     date_for_sql = []  # for SQL
-    how_many = range(len(event['items']))  # how many entry has user
+    how_many = range(len(all_event['items']))  # how many entry has user
     for i in how_many:
-        if event['items'][i]['summary'] == name:  # if name of user in calendar event
+        if all_event['items'][i]['summary'] == name:  # if name of user in calendar event
 
             # for my_entry:delete
-            date = f"{event['items'][i]['start']['dateTime'][:10]}"  # 2022-12-11
-            time = f" {event['items'][i]['start']['dateTime'][11:13]}:00"  # 14:00
+            date = f"{all_event['items'][i]['start']['dateTime'][:10]}"  # 2022-12-11
+            time = f" {all_event['items'][i]['start']['dateTime'][11:13]}:00"  # 14:00
             title.append(['Удалить запись: ', date, time])  # [Удалить запись: , '2022-12-11', '14:00']
-            event_id.append(event['items'][i]['id'])  # append eventID
+            event_id.append(all_event['items'][i]['id'])  # append eventID
 
             # 2022-12-11T15:00:00+01:00 -> '"2022-12-11"' | 'T15'
-            date_for_sql.append(f"{event['items'][i]['start']['dateTime'][:10]} "  # add date
-                                f"{event['items'][i]['start']['dateTime'][10:13]}")  # add time
+            date_for_sql.append(f"{all_event['items'][i]['start']['dateTime'][:10]} "  # add date
+                                f"{all_event['items'][i]['start']['dateTime'][10:13]}")  # add time
 
             # for my_entry:my
             info.append(f"<b>Дата</b> : <u>{date}</u>\n"
                         f"<b>Время</b> : <u>{time}</u>\n"
-                        f"<b>Услуга</b> :\n🤍 <b>{event['items'][i]['description']}</b>\n"
+                        f"<b>Услуга</b> :\n🤍 <b>{all_event['items'][i]['description']}</b>\n"
                         f"----------------------------------------\n")
 
     return how_many, info, title, event_id, date_for_sql
@@ -90,3 +90,11 @@ def my_entry_list(client_name: list) -> str and list:
     for i in range(len(get_data[1])):  # for all data what we have
         text += get_data[1][i]  # Ваши записи:| (Дата : 2022-12-19 | Время : 15:00) * what we have
     return text, get_data[2]
+
+
+def check_free_space(date: str):
+    all_date = []  # date that user can not make an entry
+    for events in all_event['items']:
+        all_date.append(events["start"]["dateTime"].split(":")[0])  # 2022-01-31T16:00:00+01:00' -> 2022-01-31T16
+    if not date in all_date:
+        print('hello')
