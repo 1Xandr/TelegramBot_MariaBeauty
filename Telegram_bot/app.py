@@ -1,12 +1,12 @@
 from aiogram import types
 from aiogram.dispatcher.filters import Command
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, CallbackQuery
 from aiogram.utils.executor import start_polling
 from days import what_month, choice_day
 from callback_button import *
-from config import dp
+from Config.config import dp
 from google_calendar import total, get_calendar_data, delete_event, my_entry_list
-from translate import translate_app as trl
+from Config.translate import translate_app as trl
 
 client_description = []  # Which service
 client_date = []  # Which date
