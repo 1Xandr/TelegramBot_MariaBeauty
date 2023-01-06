@@ -12,7 +12,8 @@ def what_month(next_now_month: int):
     current_year = datetime.now().year
 
     f_month = int(time.strftime('%m')) + next_now_month  # current month + 0 or 1 (if user chose next_month)
-    month = 1 if f_month == 13 else f_month  # If now december(12) + 1 -> January(01)
+    check_month = f_month  # if 12 + 1 = 13
+    month = 1 if check_month == 13 else f_month  # If now december(12) + 1 -> January(01)
     days_in_month = monthrange(current_year, month)[1]  # on December 31 days| month = 12 , days_in_month = 31
     # if next_month -> range(1, days_in_month + 1) else current day
     current_day = 1 if next_now_month == 1 else int(time.strftime('%d'))
@@ -24,7 +25,8 @@ def what_month(next_now_month: int):
     # make button back
     choice_day.row(InlineKeyboardButton(text='⬅️Назад', callback_data="service:back"))
     # return number of month ('01') and year('2023')
-    return month, str(int(time.strftime('%Y')) + 1) if month == '01' else time.strftime('%Y')  # 12+1, 2022 --> 01, 2023
+    # 12+1, 2022 --> 01, 2023
+    return month, str(int(time.strftime('%Y')) + 1) if check_month == '01' else time.strftime('%Y')
 
 
 # 2022 + 12 + 31 = 20221231

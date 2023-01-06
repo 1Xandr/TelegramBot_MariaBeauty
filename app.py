@@ -4,9 +4,9 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.utils.executor import start_polling
 from days import what_month, choice_day
 from callback_button import *
-from Config.config import dp
+from config import dp
 from google_calendar import total, get_calendar_data, delete_event, my_entry_list
-from Config.translate import translate_app as trl
+from translate import translate_app as trl
 
 client_description = []  # Which service
 client_date = []  # Which date
@@ -16,13 +16,15 @@ count_for_sql_delete = []  # for delete entry | which entry user want to delet
 language = [False]  # False -> language russian | True language ukraine
 client_id = []  # verification of user | did user send his contact | if not -> bot will not work
 
+
 @dp.message_handler(Command('help'))
-async def help(message: Message):
-    await message.answer(f'{trl(language[0], "Нмр")}\n👉 <b>+380950988023</b>\n👉 <b>+4915158482594</b>', parse_mode='html')
+async def command_help(message: Message):
+    await message.answer(f'{trl(language[0], "Нмр")}\n👉 <b>+380950988023</b>\n👉 <b>+4915158482594</b>',
+                         parse_mode='html')
     await message.answer_contact('380950988023', first_name=f"{trl(language[0], 'Мария')}", last_name='Гнатюк')
 
 
-@dp.message_handler(Command('start')) # start bot
+@dp.message_handler(Command('start'))  # start bot
 async def start(message: Message):
     client_id.append(message["from"]["id"])
 
@@ -32,7 +34,7 @@ async def start(message: Message):
     await message.answer("📲 Отправь свой контакт✅", reply_markup=markup)
 
 
-@dp.message_handler(content_types=types.ContentType.CONTACT) # get data from user
+@dp.message_handler(content_types=types.ContentType.CONTACT)  # get data from user
 async def get_user_data(message: Message):
     if message['contact']["user_id"] != client_id[0]:  # if user try to send not his contact
         await message.answer('Id Пользователей не совпадает')
@@ -84,7 +86,7 @@ async def delete_interface(call: CallbackQuery):
     entry_list = my_entry_list(client_name)  # get text(array) of user entry and title
     text = trl(language[0], 'Мои записи', entry_list[0])  # translate to ukrainian if user changed language
 
-    await call.message.edit_text(text=text,parse_mode='html')
+    await call.message.edit_text(text=text, parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=delete_entry_button(entry_list[1], language[0]))
 
 
@@ -92,14 +94,14 @@ async def delete_interface(call: CallbackQuery):
 async def try_delete(call: CallbackQuery):
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
     count_for_sql_delete.clear()  # if user clicked to back button
-    count_for_sql_delete.append(int(call['data'][-1])) # 'delete:0' -> '0'
+    count_for_sql_delete.append(int(call['data'][-1]))  # 'delete:0' -> '0'
     count = count_for_sql_delete[0]  # [0] -> 0
     data_time = get_calendar_data(name)[2][count]  # 2022-12-12 14:00
-    await call.message.edit_text(text=f'📕 {trl(language, "Уд?")}'
-                                      f'\n<b>Дата: {data_time[1]}' # 2022-12-12
-                                      f' {trl(language, "Время")}:'
+    await call.message.edit_text(text=f'📕 {trl(language[0], "Уд?")}'
+                                      f'\n<b>Дата: {data_time[1]}'  # 2022-12-12
+                                      f' {trl(language[0], "Время")}:'
                                       f'{data_time[2]}</b>',  # 14:00
-                                        parse_mode='html')
+                                 parse_mode='html')
     await call.message.edit_reply_markup(delete_or_not(language[0]))  # yes | no
 
 
@@ -108,7 +110,7 @@ async def delete(call: CallbackQuery):
     count = count_for_sql_delete[0]  # [0] -> 0
     name = ', '.join(client_name)  # ['Alex', '123'] -> 'Alex, 123'
     event_id = get_calendar_data(name)[3][count]  # get_calendar_data[eventID][0] -> '9vfge4sqhdi1ef32kfgjh2fj2s'
-    delete_event(event_id) # send request to delete_event
+    delete_event(event_id)  # send request to delete_event
     await call.answer(text='Запись удалена')  # show text
 
     await call.message.edit_text(text='<b>⠀       💛 Выберите Действие👇</b>', parse_mode='html')
@@ -138,13 +140,18 @@ async def choice_of_month(call: CallbackQuery):
     client_description.pop(0) if call['data'] == 'service:eyelashes' and len(client_description) != 0 else None
     # add 'service' to list for google calendar API
     match call['data']:  # translate for google calendar API and for entry:my
-        case 'service:eyelashes': client_description.append('Реснички')
-        case 'service:bikini': client_description.append('Бикини 30 €, 20 мин')
-        case 'service:legs': client_description.append('Ноги 45 €, 40 мин')
-        case 'service:arm': client_description.append('Руки 20 €, 15 мин')
-        case 'service:face': client_description.append('Лицо 10 €, 10 мин')
+        case 'service:eyelashes':
+            client_description.append('Реснички')
+        case 'service:bikini':
+            client_description.append('Бикини 30 €, 20 мин')
+        case 'service:legs':
+            client_description.append('Ноги 45 €, 40 мин')
+        case 'service:arm':
+            client_description.append('Руки 20 €, 15 мин')
+        case 'service:face':
+            client_description.append('Лицо 10 €, 10 мин')
 
-    await call.message.edit_text(text=f'<b>⠀             🗓️ {trl(language[0],"ВМесяц")}👇</b>', parse_mode='html')
+    await call.message.edit_text(text=f'<b>⠀             🗓️ {trl(language[0], "ВМесяц")}👇</b>', parse_mode='html')
     await call.message.edit_reply_markup(reply_markup=choice_month(language[0]))
 
 
@@ -163,7 +170,7 @@ async def choice_of_day(call: CallbackQuery):
 @dp.callback_query_handler(text_contains='day')  # choice time
 async def choice_of_time(call: CallbackQuery):
     # append to list day | 'day:25' -> '25' | 'day:3' -> '03' | for google calendar API and SQL
-    if call['data'] != 'day:back_to_time': # do not append call'data' if user chose button back
+    if call['data'] != 'day:back_to_time':  # do not append call'data' if user chose button back
         client_date.append(call['data'][4:] if len(call['data'][4:]) == 2 else f"0{call['data'][4:]}")
     time_button = show_time(client_date, language[0])  # create time button
 
@@ -193,5 +200,6 @@ async def confirm_entry(call: CallbackQuery):
 @dp.message_handler()  # for message which bot did not understand
 async def catch_random_message(message: Message):
     await message.answer(f'<b>{trl(language[0], "Непоняла")}</b>', parse_mode='html')
+
 
 start_polling(dp)

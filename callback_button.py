@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from days import current_date
 from google_calendar import check_free_space as cfs
-from Config.translate import translate_button as trl
+from translate import translate_button as trl
 
 
 def first_choice(language: bool):
