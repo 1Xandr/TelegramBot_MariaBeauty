@@ -29,9 +29,9 @@ def what_month(next_now_month: int):
     return month, str(int(time.strftime('%Y')) + 1) if check_month == '01' else time.strftime('%Y')
 
 
-# 2022 + 12 + 31 = 20221231
-def current_date() -> int:
+# "2022" + "12" + "31" = "2022_12_31"
+def current_date() -> str:
     year = time.strftime('%Y')  # 2022
     month = time.strftime('%m')  # 12
     day = time.strftime('%d')  # 31
-    return int(year + month + day)
+    return f"{year}_{month}_{day}"

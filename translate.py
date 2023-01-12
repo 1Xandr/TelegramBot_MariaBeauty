@@ -8,8 +8,8 @@ def translate_app(language: bool, which_text: str, *args) -> str:
         case 'Мария': return 'Марія' if language else 'Мария'
         case 'Мои записи':
             text = args[0].replace('Время', 'Час') if language else args[0]
-            rus_list = ['Услуга', 'мин', 'Реснички', 'Депиляция', 'Бикини', 'Лицо']  # rus word
-            ua_list = ['Послуга', 'хв', 'Вії', 'Депіляція', 'Бікіні', 'Обличчя']  # ua word
+            rus_list = ['Услуга', 'мин', 'Реснички', 'Депиляция', 'Бикини', 'Лицо', "Запись создана"]  # rus word
+            ua_list = ['Послуга', 'хв', 'Вії', 'Депіляція', 'Бікіні', 'Обличчя', "Запис створено"]  # ua word
             for i in range(len(rus_list)):  # translate rus -> ua if user chose ukrainian
                 text = text.replace(rus_list[i], ua_list[i]) if language else text
             return text
@@ -26,6 +26,8 @@ def translate_app(language: bool, which_text: str, *args) -> str:
             if language else 'Я вас не поняла🧐\n\n💜 Пожалуйста, пользуйтесь кнопками😌'
         case 'Уд?': return "Видалити цей запис?" if language else "Удалить эту запись?"
         case 'Время': return "Час" if language else "Время"
+        case 'Занято': return "На сьогодні все зайняте" if language else "На сегодня все занято"
+        case 'Уваснет': return "У вас немає записів" if language else "У вас нет записей"
 
 
 def translate_button(language: bool, which_text: str) -> str:

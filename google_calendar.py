@@ -1,6 +1,8 @@
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
+from days import current_date
+
 
 class GoogleCalendar:
     SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -37,7 +39,8 @@ def total(client_name: list, client_description: list, client_date: list, client
     # Add event
     event = {
         'summary': ', '.join(client_name),  # ['Alex', '123'] -> 'Alex, 123'
-        'description': ''.join(client_description),  # ['Депиляция', 'Бикини'] -> Депиляция, Бикини
+        # ['Депиляция', 'Бикини'], current_date() -> Депиляция, Бикини, 2023_01_12
+        'description': f"{''.join(client_description)}\n\n📥 Запись создана: {current_date()}",
         'start': {
             'dateTime': date_cal,  # '2023-01-26T15:00:00'
             'timeZone': 'Europe/Berlin',

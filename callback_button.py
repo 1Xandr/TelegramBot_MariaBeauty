@@ -128,7 +128,7 @@ def delete_entry_button(entry_data: list, language: bool):
     count = 0
     for i in entry_data:  # ['Удалить запись: ', date, time]
         check_data = int(''.join(i[1].split('-')))  # '2022-12-12' -> 20221212
-        current = current_date()  # current year, month, day -> 20221212
+        current = int(current_date())  # current year, month, day -> 20221212
         if check_data >= current:  # if entry not in the past, user can delete it
             text = ' '.join(i)
             text = text.replace('Удалить запись', "Видалити запис") if language else text
