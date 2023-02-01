@@ -78,9 +78,9 @@ def choice_month(language: bool):
 def back_to_entry(language: bool):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-                [
-                    InlineKeyboardButton(text=f'⬅️ {trl(language, "НДей")}', callback_data="first:back"),
-                ]
+            [
+                InlineKeyboardButton(text=f'⬅️ {trl(language, "НДей")}', callback_data="first:back"),
+            ]
         ]
     )
 
@@ -88,12 +88,12 @@ def back_to_entry(language: bool):
 def delete_or_not(language: bool):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-                [
-                    InlineKeyboardButton(text=f'✅ {trl(language, "Удал")}', callback_data="delete"),
-                ],
-                [
-                    InlineKeyboardButton(text=f'⬅️ {trl(language, "Нвыбору")}', callback_data="my_entry:delete"),
-                ]
+            [
+                InlineKeyboardButton(text=f'✅ {trl(language, "Удал")}', callback_data="delete"),
+            ],
+            [
+                InlineKeyboardButton(text=f'⬅️ {trl(language, "Нвыбору")}', callback_data="my_entry:delete"),
+            ]
         ]
     )
 
@@ -101,10 +101,10 @@ def delete_or_not(language: bool):
 def confirm_date(language: bool):
     return InlineKeyboardMarkup(
         inline_keyboard=[
-                [
-                    InlineKeyboardButton(text=f'✅ {"Так" if language else "Да"}', callback_data="confirm:yes"),
-                    InlineKeyboardButton(text=f'❌ {"Ні" if language else  "Нет"}', callback_data="day:back_to_time"),
-                ],
+            [
+                InlineKeyboardButton(text=f'✅ {"Так" if language else "Да"}', callback_data="confirm:yes"),
+                InlineKeyboardButton(text=f'❌ {"Ні" if language else "Нет"}', callback_data="day:back_to_time"),
+            ],
         ]
     )
 
@@ -113,11 +113,12 @@ def show_time(client_date: list, language: bool):
     choice_time = InlineKeyboardMarkup(row_width=3)
     # free_space = get_empty_space(client_date)  # get info from SQL, how many cell in day we have
     date = '-'.join(client_date)
-    for time_but in range(3):
-        button_time = time_but + 14  # 14 || 15 || 16
+    time_list = [10, 12, 14, 16, 18]  # which time client can make entry
+    for time_but in time_list:
+        # time_but = time_but + 14  # 14 || 15 || 16
         choice_time.insert(InlineKeyboardButton(
-            text=f'{button_time}:00', callback_data=f'time:{button_time}'
-        )) if cfs(date + f"T{button_time}") else None
+            text=f'{time_but}:00', callback_data=f'time:{time_but}'
+        )) if cfs(date + f"T{time_but}") else None
     choice_time.row(InlineKeyboardButton(text=f'⬅️{trl(language, "Ндня")}', callback_data="service:back"))
 
     return choice_time  # return Markup
